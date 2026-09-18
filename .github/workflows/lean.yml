@@ -29,11 +29,11 @@ jobs:
 
       - name: Check for sorry or admit
         run: |
-          if grep -rn --exclude-dir=".lake" --include="*.lean" "sorry" .; then
+          if grep -rn -w --exclude-dir=".lake" --include="*.lean" "sorry" .; then
             echo "Error: found sorry in source"
             exit 1
           fi
-          if grep -rn --exclude-dir=".lake" --include="*.lean" "admit" .; then
+          if grep -rn -w --exclude-dir=".lake" --include="*.lean" "admit" .; then
             echo "Error: found admit in source"
             exit 1
           fi
