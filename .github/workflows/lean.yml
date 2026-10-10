@@ -2,9 +2,9 @@ name: Lean Build & Verification
 
 on:
   push:
-    branches: [ main ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
   build:
@@ -15,26 +15,17 @@ jobs:
 
       - name: Install elan
         run: |
-          curl -sSf https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+          curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
-      - name: Resolve dependencies
-        run: lake update
-
       - name: Lake exe cache get
-        run: lake exe cache get
+        run: |
+          lake exe cache get
 
       - name: Lake build
-        run: lake build
-
-      - name: Check for sorry or admit
         run: |
-          if grep -rn -w --exclude-dir=".lake" --include="*.lean" "sorry" .; then
-            echo "Error: found sorry in source"
-            exit 1
-          fi
-          if grep -rn -w --exclude-dir=".lake" --include="*.lean" "admit" .; then
-            echo "Error: found admit in source"
-            exit 1
-          fi
-          echo "Verification passed: zero sorry, zero admit."
+          lake build
+
+      - name: Run verification script
+        run: |
+          python3 check.py
